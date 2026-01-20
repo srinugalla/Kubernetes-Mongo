@@ -1,144 +1,135 @@
-## Kubernetes-Mongo
+# Kubernetes-Mongo 🐳📦
 
-Kubernetes manifests to deploy MongoDB along with a Mongo Express UI on a Kubernetes cluster.
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/) 
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/) 
+[![Mongo Express](https://img.shields.io/badge/MongoExpress-000000?logo=mongodb&logoColor=white)](https://github.com/mongo-express/mongo-express)
 
-This repo demonstrates how to use Kubernetes Secrets, ConfigMaps, Deployments, and Services to run a database + web admin UI setup.
-
----
-
-### 🧱 Project Structure
-mongo-configmap.yaml    # ConfigMap for app configuration
-mongo-express.yaml      # Mongo Express deployment + service
-mongo-secret.yaml       # Secret for MongoDB credentials
-mongo.yaml              # MongoDB deployment + service
-README.md               # This documentation
+A **Kubernetes project** to deploy **MongoDB** and **Mongo Express** using Kubernetes manifests.  
+Ideal for learning **Secrets**, **ConfigMaps**, **Deployments**, and **Services** in Kubernetes.
 
 ---
 
-### 🚀 Overview
+## 🚀 Overview
 
-This setup deploys:
+This project deploys:
 
-MongoDB — a NoSQL database container
+- **MongoDB**: Database backend  
+- **Mongo Express**: Web UI for MongoDB  
+- **Secrets**: Manage credentials securely  
+- **ConfigMaps**: Store configuration  
+- **Services**: Expose pods internally and externally  
 
-Internal Service — lets other pods (like mongo-express) talk to MongoDB
-
-Secret — stores admin credentials for MongoDB securely
-
-ConfigMap — stores connection info (e.g., DB host name)
-
-Mongo Express — web-based admin interface to view & manage your DB
-
-Environment variables in the pod specs are configured using Secrets and ConfigMaps so sensitive values are not hardcoded.
+Tested locally with **Minikube**, can run on any Kubernetes cluster.
 
 ---
 
-### 🧠 Prerequisites
+## 📂 Project Structure
 
-Make sure you have:
+Kubernetes-Mongo/
+├─ mongo.yaml # MongoDB Deployment & Service
+├─ mongo-secret.yaml # Kubernetes Secret for MongoDB credentials
+├─ mongo-configmap.yaml # ConfigMap for Mongo Express
+├─ mongo-express.yaml # Mongo Express Deployment
+├─ mongo-express-svc.yaml # Mongo Express Service
+└─ README.md # This file
 
-A Kubernetes cluster (Minikube, kind, GKE, etc.)
-
-kubectl installed and configured
-
-(Optional) A LoadBalancer service provider if exposing mongo-express externally
 
 ---
 
-### 📦 Deploying the Stack
+## 🛠 Prerequisites
 
-Apply each resource in the correct order:
+- Kubernetes cluster (Minikube recommended)
+- kubectl installed
+- Docker
 
-1. Create the Secret
+---
+
+## ⚡ Setup Instructions
+
+### 1️⃣ Create MongoDB Secret
+
+Generate base64 encoded credentials:
+
+```bash
+echo -n 'username' | base64
+echo -n 'password' | base64
+```
+Apply the secret:
+
+```
 kubectl apply -f mongo-secret.yaml
+```
+---
 
-
-This stores your MongoDB username/password encoded in a Kubernetes Secret.
-
-2. Deploy MongoDB
-kubectl apply -f mongo.yaml
-
-
-This manifest creates:
-
-A Deployment for MongoDB using the official image
-
-A Service (ClusterIP) for internal access
-
-Environment variables taking credentials from the secret created earlier.
-
-3. Add the ConfigMap
+### 2️⃣ Apply ConfigMap
+```
 kubectl apply -f mongo-configmap.yaml
-
-
-This file provides configuration like the internal MongoDB service address required by the UI.
-
-4. Deploy Mongo Express
-kubectl apply -f mongo-express.yaml
-
-
-This manifest creates:
-
-A Deployment for Mongo Express
-
-A Service to expose the UI
-
-Environment variables pulled from both the Secret and ConfigMap.
-
+```
 ---
 
-### 🧪 Verify
-
-Check pods & services:
-
+### 3️⃣ Deploy MongoDB
+```
+kubectl apply -f mongo.yaml
+```
+Check the pod status:
+```
 kubectl get pods
-kubectl get services
+```
+---
 
+### 4️⃣ Deploy Mongo Express
+```
+kubectl apply -f mongo-express.yaml
+kubectl apply -f mongo-express-svc.yaml
+```
+---
 
-Access the Mongo Express UI (if exposed externally):
+### 🌐 Access Mongo Express
 
-### Example for Minikube
-minikube service mongo-express
+Use Minikube to open the service:
+```
+minikube service mongodb-express-service
+```
+- Opens browser at: http://<minikube-ip>:<port>
+- Default credentials: username & password from mongodb-secret.yaml
+🔑 Make sure to update the secret values for production
 
 ---
 
-### 🧩 How It Works
+### 🔍 Verify Deployment
+```
+kubectl get all
+kubectl logs -l app=mongo-express
+```
+---
 
-Secrets store sensitive credentials so they’re not visible in plaintext.
-
-ConfigMaps manage non-sensitive config values like service names.
-
-Deployments ensure your containers are running and recover automatically.
-
-Services assign stable network names so pods can talk to one another.
+### 🔐 Security Notes
+- Never commit real credentials
+- Base64 encoding is not encryption
+- Use proper secret management for production deployments
 
 ---
 
-### ⚙️ Customization
+### 🎓 Learnings
 
-You can tweak:
-
-Number of replicas
-
-MongoDB version
-
-Storage (add PVCs for durable data)
-
-LoadBalancer types for public access
+- Kubernetes DNS & service discovery
+- Secrets vs ConfigMaps
+- Pod-to-pod communication
+- Exposing services with LoadBalancer & NodePort
 
 ---
 
-### 🧹 Cleanup
+### ✅ Status
 
-Remove all resources:
-
-kubectl delete -f mongo-express.yaml \
-               -f mongo-configmap.yaml \
-               -f mongo.yaml \
-               -f mongo-secret.yaml
+- Working locally on Minikube
+- Beginner-friendly example
+- Ready for learning and experimentation
 
 ---
 
-### 📚 Learn More
+### 📖 References
 
-For more comprehensive Kubernetes/MongoDB patterns (Operators, StatefulSets, persistent storage, sharded clusters), you can explore the official MongoDB Kubernetes docs and community tools:
+- [Kubernetes Docs](https://kubernetes.io/docs/)
+- [MongoDB Docs](https://www.mongodb.com/docs/)
+- [Mongo Express GitHub](https://github.com/mongo-express/mongo-express)
+
