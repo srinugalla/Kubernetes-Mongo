@@ -38,7 +38,7 @@ Kubernetes-Mongo/
 
 ## 🛠 Prerequisites
 
-- Kubernetes cluster (Minikube recommended)
+- Kubernetes cluster (Minikube for local development)
 - kubectl installed
 - Docker
 
